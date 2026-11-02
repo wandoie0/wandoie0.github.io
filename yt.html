@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="referrer" content="origin"><title>Wandoie YouTube</title>
+<style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}iframe{position:absolute;left:0;top:0;width:100%;height:100%;border:0}</style></head>
+<body><iframe id="f" allow="autoplay; encrypted-media"></iframe>
+<script>
+/* Wandoie TV YouTube aracısı: TV uygulaması bu sayfayı açar, bu sayfa YouTube'u gömer.
+   Böylece YouTube oynatıcısı bir web sitesinin içinde çalıştığını görür. Mesajlar iki yöne aktarılır. */
+var q = {}; location.search.slice(1).split('&').forEach(function (p) { var kv = p.split('='); if (kv[0]) q[kv[0]] = decodeURIComponent(kv[1] || ''); });
+var f = document.getElementById('f');
+f.src = 'https://www.youtube.com/embed/' + encodeURIComponent(q.v || '') + '?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&fs=0&disablekb=1&hl=tr&enablejsapi=1' +
+  '&origin=' + encodeURIComponent(location.origin) + (q.start ? '&start=' + q.start : '') + (q.cc === '1' ? '&cc_load_policy=1&cc_lang_pref=tr' : '');
+window.addEventListener('message', function (e) {
+  if (e.source === f.contentWindow) { if (window.parent !== window) window.parent.postMessage(e.data, '*'); }
+  else if (e.source === window.parent) { try { f.contentWindow.postMessage(e.data, '*'); } catch (x) {} }
+});
+f.addEventListener('load', function () { if (window.parent !== window) window.parent.postMessage(JSON.stringify({ event: 'relayLoaded' }), '*'); });
+</script></body></html>
