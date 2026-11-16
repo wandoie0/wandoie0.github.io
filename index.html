@@ -1,1 +1,231 @@
-﻿<!doctype html><title>Wandoie</title><p>Wandoie TV</p>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wandoie · Ekranı TV’ye yansıt</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='24 50 208 156'%3E%3Cpath d='M30 60 L74 60 L112 196 L68 196 Z' fill='%23e9d5ff'/%3E%3Cpath d='M106 96 L150 96 L188 196 L144 196 Z' fill='%23fbbf24'/%3E%3Cpath d='M68 196 L112 196 L150 96 L106 96 Z' fill='%23a855f7'/%3E%3Cpath d='M144 196 L188 196 L226 60 L182 60 Z' fill='%237c3aed'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(1200px 700px at 20% -10%,#2a1257 0,transparent 60%),radial-gradient(900px 600px at 110% 110%,#1d1050 0,transparent 60%),#07050d;color:#fff;font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:520px;background:rgba(17,12,29,.92);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:36px 36px 28px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.head{display:flex;align-items:center;margin-bottom:26px}
+.head svg{width:56px;height:42px;margin-right:14px}
+.head b{display:block;font-size:22px;font-weight:800}
+.head span{color:#a69cbf;font-size:14px}
+label{display:block;font-size:13px;color:#a69cbf;margin:0 0 6px 2px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+input{width:100%;background:#0b0816;border:1px solid rgba(255,255,255,.14);border-radius:14px;color:#fff;font:inherit;padding:13px 16px;outline:0;transition:border-color .2s}
+input:focus{border-color:#a855f7}
+.code{font-size:40px;font-weight:800;letter-spacing:.5em;text-align:center;padding:14px 0 14px .5em;color:#fbbf24}
+.row{margin-bottom:18px}
+button{width:100%;border:0;border-radius:14px;font:inherit;font-weight:700;font-size:18px;padding:15px;cursor:pointer;transition:transform .1s,opacity .2s;display:flex;align-items:center;justify-content:center}
+button:active{transform:scale(.98)}
+button svg{width:22px;height:22px;margin-right:10px}
+.pri{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 10px 30px rgba(124,58,237,.4)}
+.sec{background:rgba(255,255,255,.08);color:#fff;margin-top:10px}
+.red{background:#dc2626;color:#fff;margin-top:10px}
+button[disabled]{opacity:.5;cursor:default}
+.msg{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:14px;display:none}
+.msg.on{display:block}
+.msg.err{background:rgba(239,68,68,.14);color:#fca5a5}
+.msg.inf{background:rgba(168,85,247,.14);color:#e9d5ff}
+.st{display:flex;align-items:center;font-size:17px;font-weight:600;margin-bottom:16px}
+.st i{width:12px;height:12px;border-radius:50%;background:#fbbf24;margin-right:12px;box-shadow:0 0 0 5px rgba(251,191,36,.18);flex:none}
+.st.live i{background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.2);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 9px rgba(34,197,94,.05)}}
+video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:block;margin-bottom:14px;border:1px solid rgba(255,255,255,.1)}
+.foot{margin-top:22px;font-size:13px;color:#6f6788;text-align:center}
+.hide{display:none!important}
+.spin{width:18px;height:18px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;animation:sp 1s linear infinite;margin-right:10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <svg viewBox="24 50 208 156"><defs><linearGradient id="wau" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs><path d="M30 60 L74 60 L112 196 L68 196 Z" fill="#e9d5ff" opacity=".88"/><path d="M106 96 L150 96 L188 196 L144 196 Z" fill="url(#wau)" opacity=".92"/><path d="M68 196 L112 196 L150 96 L106 96 Z" fill="#a855f7" opacity=".88"/><path d="M144 196 L188 196 L226 60 L182 60 Z" fill="#7c3aed" opacity=".9"/></svg>
+    <div><b>Ekranı TV’ye yansıt</b><span>Wandoie TV · Ekran Paylaşımı</span></div>
+  </div>
+
+  <div id="form">
+    <div class="row"><label for="code">TV’deki kod</label><input id="code" class="code" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="····"></div>
+    <div class="row"><label for="name">Adın (TV’de görünür)</label><input id="name" maxlength="30" autocomplete="off" placeholder="Örn. Ahmet"></div>
+    <button id="go" class="pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18v12H3z M8 21h8 M12 16v5"/></svg>Paylaş</button>
+  </div>
+
+  <div id="live" class="hide">
+    <div class="st" id="st"><i></i><span>Bağlanıyor…</span></div>
+    <video id="pv" muted autoplay playsinline></video>
+    <button id="sw" class="sec">Başka ekran / pencere seç</button>
+    <button id="stop" class="red">Paylaşımı durdur</button>
+  </div>
+
+  <div id="msg" class="msg"></div>
+  <div class="foot">Görüntü doğrudan ofis ağı üzerinden TV’ye gider. Chrome veya Edge kullan.</div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+<script>
+(function () {
+  var PFX = 'wandoie-ekran-';
+  var $ = function (id) { return document.getElementById(id); };
+  var codeIn = $('code'), nameIn = $('name');
+  var peer = null, conn = null, call = null, stream = null, live = false, curCode = '', openT = null;
+
+  try {
+    var h = (location.hash || '').replace('#', '');
+    codeIn.value = /^\d{4}$/.test(h) ? h : (localStorage.getItem('wd_code') || '');
+    nameIn.value = localStorage.getItem('wd_name') || '';
+  } catch (e) {}
+  (codeIn.value ? nameIn.value ? $('go') : nameIn : codeIn).focus();
+  codeIn.addEventListener('input', function () { codeIn.value = codeIn.value.replace(/\D/g, '').slice(0, 4); });
+  [codeIn, nameIn].forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); }); });
+
+  function msg(t, kind) { var m = $('msg'); m.textContent = t || ''; m.className = 'msg' + (t ? ' on ' + (kind || 'err') : ''); }
+  function status(t, isLive) { $('st').className = 'st' + (isLive ? ' live' : ''); $('st').querySelector('span').textContent = t; }
+  function ui(isLive) { $('form').classList.toggle('hide', isLive); $('live').classList.toggle('hide', !isLive); }
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    msg('Bu tarayıcı ekran paylaşımını desteklemiyor. Chrome veya Edge ile aç.'); $('go').disabled = true;
+  }
+  if (!window.peerjs) { msg('Bağlantı modülü yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.'); $('go').disabled = true; }
+
+  function getPeer() {
+    if (peer && !peer.destroyed) {
+      if (peer.open) return Promise.resolve(peer);
+      if (peer.disconnected) { try { peer.reconnect(); } catch (e) {} }
+    } else {
+      var srv = new URLSearchParams(location.search).get('srv'), po = { debug: 0 };
+      if (srv) { po.host = srv.split(':')[0]; po.port = +srv.split(':')[1] || 9000; po.path = '/'; po.secure = false; }
+      peer = new peerjs.Peer(po);
+      peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); } catch (e) {} }, 2000); });
+      peer.on('error', function (e) {
+        if (e.type === 'peer-unavailable') { fail('TV bulunamadı. Kod doğru mu, TV’de Wandoie açık mı?'); }
+        else if (/network|server|socket/.test(e.type) && !live) { fail('Bağlantı sunucusuna ulaşılamadı. İnterneti kontrol et.'); }
+      });
+    }
+    var p = peer;
+    return new Promise(function (ok, no) {
+      if (p.open) return ok(p);
+      var t = setTimeout(function () { no(new Error('Bağlantı sunucusuna ulaşılamadı.')); }, 12000);
+      p.once('open', function () { clearTimeout(t); ok(p); });
+    });
+  }
+  getPeer().catch(function () {});
+
+  function preferH264(sdp) {
+    try {
+      var L = sdp.split('\r\n'), mi = -1, pts = [];
+      L.forEach(function (l, i) { if (l.indexOf('m=video') === 0) mi = i; var m = /^a=rtpmap:(\d+) H264\/90000/.exec(l); if (m) pts.push(m[1]); });
+      if (mi < 0 || !pts.length) return sdp;
+      var p = L[mi].split(' '), head = p.slice(0, 3), rest = p.slice(3);
+      L[mi] = head.concat(pts.filter(function (x) { return rest.indexOf(x) >= 0; }), rest.filter(function (x) { return pts.indexOf(x) < 0; })).join(' ');
+      return L.join('\r\n');
+    } catch (e) { return sdp; }
+  }
+
+  function capture() {
+    return navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: { ideal: 30, max: 30 }, width: { ideal: 1920, max: 1920 }, height: { ideal: 1080, max: 1080 } },
+      audio: true, systemAudio: 'include', selfBrowserSurface: 'exclude', surfaceSwitching: 'include'
+    }).then(function (s) {
+      var vt = s.getVideoTracks()[0];
+      try { vt.contentHint = 'detail'; } catch (e) {}
+      vt.addEventListener('ended', function () { if (stream === s) stop(true, 'Paylaşım durduruldu.'); });
+      return s;
+    });
+  }
+
+  function start() {
+    if ($('go').disabled) return;
+    var code = codeIn.value.trim(), name = nameIn.value.trim();
+    if (!/^\d{4}$/.test(code)) { msg('TV ekranındaki 4 haneli kodu yaz.'); codeIn.focus(); return; }
+    try { localStorage.setItem('wd_code', code); localStorage.setItem('wd_name', name); } catch (e) {}
+    msg('');
+    capture().then(function (s) {
+      stream = s; curCode = code;
+      $('pv').srcObject = s;
+      ui(true); status('TV’ye bağlanıyor…');
+      return getPeer().then(function (p) {
+        conn = p.connect(PFX + code, { metadata: { name: name || 'Bilgisayar' }, serialization: 'json', reliable: true });
+        var c = conn;
+        openT = setTimeout(function () { if (c === conn && !c.open) fail('TV cevap vermiyor. TV’de Wandoie açık mı?'); }, 15000);
+        c.on('open', function () { clearTimeout(openT); status('TV’de onay bekleniyor…'); });
+        c.on('data', function (d) {
+          if (c !== conn || !d) return;
+          if (d.t === 'ok') sendVideo();
+          else if (d.t === 'wait') status('TV’de “Göster”e basılmasını bekliyor…');
+          else if (d.t === 'no') stop(false, 'TV paylaşımı reddetti.');
+          else if (d.t === 'busy') stop(false, 'TV şu an başka bir isteği soruyor, birazdan tekrar dene.');
+          else if (d.t === 'stop') stop(false, 'Paylaşım TV’den kapatıldı.', 'inf');
+        });
+        c.on('close', function () { if (c === conn) stop(false, live ? 'TV bağlantısı kapandı.' : 'TV bağlantıyı kapattı.'); });
+      });
+    }).catch(function (e) {
+      if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) { msg('Ekran seçilmedi.', 'inf'); return; }
+      fail((e && e.message) || 'Başlatılamadı.');
+    });
+  }
+
+  function sendVideo() {
+    status('Görüntü gönderiliyor…');
+    call = peer.call(PFX + curCode, stream, { metadata: { name: nameIn.value.trim() }, sdpTransform: preferH264 });
+    var c = call;
+    c.on('iceStateChanged', function (st) {
+      if (c !== call) return;
+      if (st === 'connected' || st === 'completed') { live = true; status('TV’ye yansıtılıyor', true); tune(c); }
+      else if (st === 'failed') fail('TV’ye görüntü gönderilemedi (ağ engelliyor olabilir).');
+      else if (st === 'disconnected') status('Bağlantı zayıf…');
+    });
+    c.on('close', function () { if (c === call && live) stop(false, 'Paylaşım bitti.', 'inf'); });
+  }
+
+  /* netlik: yüksek bit hızı, yazılar için çözünürlüğü koru */
+  function tune(c) {
+    try {
+      c.peerConnection.getSenders().forEach(function (s) {
+        if (!s.track || s.track.kind !== 'video') return;
+        var p = s.getParameters();
+        if (!p.encodings || !p.encodings.length) p.encodings = [{}];
+        p.encodings[0].maxBitrate = 8000000; p.encodings[0].maxFramerate = 30;
+        p.degradationPreference = 'maintain-resolution';
+        s.setParameters(p).catch(function () {});
+      });
+    } catch (e) {}
+  }
+
+  $('sw').addEventListener('click', function () {
+    if (!stream) return;
+    capture().then(function (s) {
+      var old = stream; stream = s; $('pv').srcObject = s;
+      if (call && call.peerConnection) {
+        call.peerConnection.getSenders().forEach(function (sn) {
+          if (!sn.track) return;
+          var nt = sn.track.kind === 'video' ? s.getVideoTracks()[0] : s.getAudioTracks()[0];
+          if (nt) sn.replaceTrack(nt);
+        });
+        tune(call);
+      }
+      old.getTracks().forEach(function (t) { t.stop(); });
+    }).catch(function () {});
+  });
+
+  function fail(t) { stop(false, t); }
+  function stop(tell, text, kind) {
+    clearTimeout(openT);
+    var c = conn, k = call;
+    conn = null; call = null; live = false;
+    if (tell && c && c.open) { try { c.send({ t: 'end' }); } catch (e) {} }
+    setTimeout(function () { try { if (k) k.close(); } catch (e) {} try { if (c) c.close(); } catch (e) {} }, 300);
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    $('pv').srcObject = null;
+    ui(false);
+    msg(text || '', kind);
+  }
+  $('go').addEventListener('click', start);
+  $('stop').addEventListener('click', function () { stop(true, 'Paylaşım durduruldu.', 'inf'); });
+  window.addEventListener('beforeunload', function () { if (conn && conn.open) { try { conn.send({ t: 'end' }); } catch (e) {} } });
+})();
+</script>
+</body>
+</html>
