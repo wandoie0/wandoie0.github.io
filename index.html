@@ -26,7 +26,7 @@ button svg{width:22px;height:22px;margin-right:10px}
 .red{background:#dc2626;color:#fff;margin-top:10px}
 button[disabled]{opacity:.5;cursor:default}
 .msg{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:14px;display:none}
-.msg.on{display:block}
+.msg.on{display:block;white-space:pre-line;word-break:break-word}
 .msg.err{background:rgba(239,68,68,.14);color:#fca5a5}
 .msg.inf{background:rgba(168,85,247,.14);color:#e9d5ff}
 .st{display:flex;align-items:center;font-size:17px;font-weight:600;margin-bottom:16px}
@@ -215,7 +215,19 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
     }).catch(function () {});
   });
 
-  function fail(t) { stop(false, t); }
+  function fail(t) {
+    var pc = (conn && conn.peerConnection) || (call && call.peerConnection);
+    if (!pc || !pc.getStats) { stop(false, t); return; }
+    pc.getStats().then(function (r) {
+      var L = [], R = [], pairs = 0;
+      r.forEach(function (x) {
+        if (x.type === 'local-candidate') L.push(x.candidateType + ':' + (x.address || x.ip || '?'));
+        if (x.type === 'remote-candidate') R.push(x.candidateType + ':' + (x.address || x.ip || '?'));
+        if (x.type === 'candidate-pair') pairs++;
+      });
+      stop(false, t + '\n\nTeşhis — PC: ' + (L.join(', ') || 'yok') + ' | TV: ' + (R.join(', ') || 'yok') + ' | çift: ' + pairs + ' | ' + navigator.userAgent.replace(/^.*\) /, ''));
+    }).catch(function () { stop(false, t); });
+  }
   function stop(tell, text, kind) {
     clearTimeout(openT);
     var c = conn, k = call;
