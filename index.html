@@ -73,6 +73,19 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
     { urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username: 'peerjs', credential: 'peerjsp' },
     { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp', 'turns:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' }];
   var $ = function (id) { return document.getElementById(id); };
+  /* teşhis: TV'den gelen cevabı ve adayları kaydet */
+  var DIAG = { ans: 0, rc: [] };
+  try {
+    var P = RTCPeerConnection.prototype, aic = P.addIceCandidate, srd = P.setRemoteDescription;
+    P.addIceCandidate = function (c) {
+      try { var t = (c && (c.candidate || (c.toJSON && c.toJSON().candidate))) || ''; var m = / (\S+) (\d+) typ (\w+)/.exec(t); DIAG.rc.push(m ? m[3] + ':' + m[1].replace(/^(.{8}).*\.local$/, '$1….local') : (t ? '?' : 'son')); } catch (e) {}
+      return aic.apply(this, arguments);
+    };
+    P.setRemoteDescription = function (d) {
+      try { if (d && d.type === 'answer') { DIAG.ans++; var n = (d.sdp.match(/a=candidate/g) || []).length; if (n) DIAG.rc.push('sdp-aday:' + n); } } catch (e) {}
+      return srd.apply(this, arguments);
+    };
+  } catch (e) {}
   var codeIn = $('code'), nameIn = $('name');
   var peer = null, conn = null, call = null, stream = null, live = false, curCode = '', openT = null;
 
@@ -229,7 +242,7 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
         if (x.type === 'remote-candidate') R.push(x.candidateType + ':' + (x.address || x.ip || '?'));
         if (x.type === 'candidate-pair') pairs++;
       });
-      stop(false, t + '\n\nTeşhis — PC: ' + (L.join(', ') || 'yok') + ' | TV: ' + (R.join(', ') || 'yok') + ' | çift: ' + pairs + ' | ' + navigator.userAgent.replace(/^.*\) /, ''));
+      stop(false, t + '\n\nTeşhis — PC: ' + (L.join(', ') || 'yok') + ' | TV: ' + (R.join(', ') || 'yok') + ' | çift: ' + pairs + ' | TV cevabı: ' + DIAG.ans + ' | TV adayları: ' + (DIAG.rc.join(', ') || 'hiç gelmedi') + ' | ' + navigator.userAgent.replace(/^.*\) /, ''));
     }).catch(function () { stop(false, t); });
   }
   function stop(tell, text, kind) {
