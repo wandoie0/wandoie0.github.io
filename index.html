@@ -149,7 +149,12 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
       return getPeer().then(function (p) {
         conn = p.connect(PFX + code, { metadata: { name: name || 'Bilgisayar' }, serialization: 'json', reliable: true });
         var c = conn;
-        openT = setTimeout(function () { if (c === conn && !c.open) fail('TV cevap vermiyor. TV’de Wandoie açık mı?'); }, 15000);
+        openT = setTimeout(function () { if (c === conn && !c.open) fail(c.peerConnection && /checking|new/.test(c.peerConnection.iceConnectionState) ? 'TV bulundu ama bağlantı kurulamadı (ağ engelliyor olabilir).' : 'TV cevap vermiyor. TV’de Wandoie açık mı?'); }, 20000);
+        c.on('iceStateChanged', function (st) {
+          if (c !== conn) return;
+          if (st === 'checking') status('TV bulundu, ağ bağlantısı kuruluyor…');
+          else if (st === 'failed') fail('TV bulundu ama bağlantı kurulamadı. Bilgisayar ve TV aynı ağda mı (misafir Wi-Fi olmasın)?');
+        });
         c.on('open', function () { clearTimeout(openT); status('TV’de onay bekleniyor…'); });
         c.on('data', function (d) {
           if (c !== conn || !d) return;
