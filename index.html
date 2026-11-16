@@ -118,7 +118,7 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
       peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); } catch (e) {} }, 2000); });
       peer.on('error', function (e) {
         if (e.type === 'peer-unavailable') { fail('TV bulunamadı. Kod doğru mu, TV’de Wandoie açık mı?'); }
-        else if (/network|server|socket/.test(e.type) && !live) { fail('Bağlantı sunucusuna ulaşılamadı. İnterneti kontrol et.'); }
+        else if (/network|server|socket/.test(e.type) && !live) { var p0 = peer; peer = null; try { p0.destroy(); } catch (x) {} fail('Bağlantı sunucusuyla bağlantı koptu (ağ/VPN değişti mi?). Tekrar Paylaş’a bas.'); }
       });
     }
     var p = peer;
