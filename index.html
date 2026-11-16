@@ -68,6 +68,10 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
 <script>
 (function () {
   var PFX = 'wandoie-ekran-';
+  /* aynı ağda doğrudan bağlanamazsa görüntü bu aktarıcılardan geçer */
+  var ICE = [{ urls: 'stun:stun.l.google.com:19302' },
+    { urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username: 'peerjs', credential: 'peerjsp' },
+    { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp', 'turns:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' }];
   var $ = function (id) { return document.getElementById(id); };
   var codeIn = $('code'), nameIn = $('name');
   var peer = null, conn = null, call = null, stream = null, live = false, curCode = '', openT = null;
@@ -95,7 +99,7 @@ video{width:100%;border-radius:14px;background:#000;aspect-ratio:16/9;display:bl
       if (peer.open) return Promise.resolve(peer);
       if (peer.disconnected) { try { peer.reconnect(); } catch (e) {} }
     } else {
-      var srv = new URLSearchParams(location.search).get('srv'), po = { debug: 0 };
+      var srv = new URLSearchParams(location.search).get('srv'), po = { debug: 0, config: { iceServers: ICE } };
       if (srv) { po.host = srv.split(':')[0]; po.port = +srv.split(':')[1] || 9000; po.path = '/'; po.secure = false; }
       peer = new peerjs.Peer(po);
       peer.on('disconnected', function () { setTimeout(function () { try { if (peer && !peer.destroyed && peer.disconnected) peer.reconnect(); } catch (e) {} }, 2000); });
